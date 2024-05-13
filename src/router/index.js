@@ -1,18 +1,18 @@
-// router/index.js
+// router/index.js 파일
+
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/Home.vue';
-import About from '../views/About.vue';
+import Login from '../components/Login.vue';
+import App from "../App.vue"; // 로그인 컴포넌트 경로에 맞게 수정
 
 const routes = [
+    // 다른 라우트 설정
     {
         path: '/',
-        name: 'Home',
-        component: Home
+        component: App,
     },
     {
-        path: '/about',
-        name: 'About',
-        component: About
+        path: '/login',
+        component: Login
     }
 ];
 
