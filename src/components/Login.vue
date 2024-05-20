@@ -69,12 +69,14 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useUserStore } from '../store/index.js'; // UserStore import
+import { useUserStore } from '../store/userStore.js'; // UserStore import
 
 const userId = ref('');
 const password = ref('');
 const visible = ref(false);
+const emits = defineEmits(['login-success']);
 const userStore = useUserStore(); // UserStore 사용
+
 
 const toggleVisibility = () => {
   visible.value = !visible.value;
@@ -91,9 +93,6 @@ const login = async (userId, password) => {
       body: JSON.stringify({ user_id: userId, password }),
     });
 
-    console.log('userId : ', userId);
-    console.log("password : ", password);
-
     if (!response.ok) {
       throw new Error('로그인 실패');
     }
@@ -103,6 +102,7 @@ const login = async (userId, password) => {
     if(accessToken == null) {
       throw new Error('토큰이 없습니다.');
     }
+
     // 로컬스토리지에 접근토큰 저장
     localStorage.setItem('accessToken', accessToken);
     // Pinia의 UserStore를 통해 접근 토큰 저장
@@ -111,7 +111,11 @@ const login = async (userId, password) => {
     const expirationTime = Date.now() + 60 * 60 * 1000; // 1시간 (밀리/초)
     localStorage.setItem('accessTokenExpiration', expirationTime);
 
-    return await response.json();
+    console.log('AccessToken : ', accessToken.toString());
+
+    const userData = await response.json();
+
+    return userData;
   } catch (error) {
     throw new Error('로그인 요청 실패:', error);
   }
@@ -131,6 +135,8 @@ const handleLogin = async () => {
 
     // Pinia에 유저 정보 저장
     userStore.setUserData(userData);
+
+    emits('login-success');
 
     //에러가 발생하면 적절한 에러 처리 로직을 수행합니다.
   } catch (error) {

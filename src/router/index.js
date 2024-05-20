@@ -1,4 +1,4 @@
-// router/index.js 파일
+// router/userStore.js 파일
 
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
