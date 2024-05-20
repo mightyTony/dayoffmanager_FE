@@ -69,7 +69,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useUserStore } from '../store/userStore.js'; // UserStore import
+import { useUserStore } from '../store/userStore.js';
+import axios from "axios"; // UserStore import
 
 const userId = ref('');
 const password = ref('');
@@ -85,15 +86,20 @@ const toggleVisibility = () => {
 // 로그인 함수 정의
 const login = async (userId, password) => {
   try {
-    const response = await fetch('http://localhost:8080/api/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ user_id: userId, password }),
+    // const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({ user_id: userId, password }),
+    // });
+
+    const response = await axios.post('http://localhost:8080/api/v1/auth/login', {
+      user_id : userId,
+      password: password
     });
 
-    if (!response.ok) {
+    if (!response.data.code || response.data.code !== 200) {
       throw new Error('로그인 실패');
     }
 
@@ -111,11 +117,18 @@ const login = async (userId, password) => {
     const expirationTime = Date.now() + 60 * 60 * 1000; // 1시간 (밀리/초)
     localStorage.setItem('accessTokenExpiration', expirationTime);
 
+
+
     console.log('AccessToken : ', accessToken.toString());
 
-    const userData = await response.json();
+    const userData = response.data.data;
 
-    return userData;
+    if (userData.status === 'APPROVED') {
+      return userData;
+    } else if(userData.status === 'PENDING') {
+      throw new Error('아직 승인 못 받았습니다!');
+      alert('아직 승인 못 받았습니다!');
+    }
   } catch (error) {
     throw new Error('로그인 요청 실패:', error);
   }
@@ -124,14 +137,11 @@ const login = async (userId, password) => {
 // 로그인 처리 메서드
 const handleLogin = async () => {
   try {
-    const response = await login(userId.value, password.value);
-
-    // 응답에서 유저 정보 추출
-    const userData = response.data;
+    const userData = await login(userId.value, password.value);
 
     // FIXME
-    console.log('userData : ', response.data);
-    console.log('username: ', response.data.name)
+    console.log('userData : ', userData);
+    console.log('username: ', userData.name)
 
     // Pinia에 유저 정보 저장
     userStore.setUserData(userData);
@@ -141,6 +151,7 @@ const handleLogin = async () => {
     //에러가 발생하면 적절한 에러 처리 로직을 수행합니다.
   } catch (error) {
     console.error('로그인 실패:', error);
+    alert(error.message);
     // 에러 처리 로직 추가
   }
 };
