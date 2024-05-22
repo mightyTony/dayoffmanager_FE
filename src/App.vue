@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container>
-      <v-navigation-drawer class="bg-green-accent-3" permanent>
+      <v-navigation-drawer class="bg-grey-lighten-2" permanent>
         <v-list color="transparent">
           <v-list-item
               lines="two"
@@ -21,18 +21,21 @@
         </template>
         <template v-else v-slot:append>
           <div class="pa-2">
-            <v-btn block @click="showLoginForm = true">Login</v-btn>
+            <v-btn block @click="showLogin">Login</v-btn>
           </div>
         </template>
       </v-navigation-drawer>
 
-      <v-main scrollable permanent class="bg-blue" >
-          <div v-if="showLoginForm">
-            <Login @login-success="handleLoginSuccess" />
-          </div>
-          <div v-else>
-            <h1>Welcome to the Dashboard</h1>
-          </div>
+      <v-main scrollable permanent class="bg-blue pt-8">
+        <div v-if="showLoginForm">
+          <Login @login-success="handleLoginSuccess" @show-signup="handleShowSignup" />
+        </div>
+        <div v-else-if="showSignupForm">
+          <SignUp @signup-success="handleSignupSuccess" @show-login="handleShowLogin" />
+        </div>
+        <div v-else>
+          <h1>Welcome to the Dashboard</h1>
+        </div>
       </v-main>
     </v-container>
   </v-app>
@@ -42,12 +45,14 @@
 import { computed, ref } from 'vue';
 import Login from './components/Login.vue';
 import { useUserStore } from './store/userStore.js';
+import SignUp from "./components/SignUp.vue";
 
 const userStore = useUserStore();
 
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 const userName = computed(() => userStore.userName);
-const showLoginForm = computed(() => !userStore.isLoggedIn);
+const showLoginForm = ref(true);
+const showSignupForm = ref(false);
 
 const logout = () => {
   userStore.logout();
@@ -55,9 +60,30 @@ const logout = () => {
 
 const handleLoginSuccess = () => {
   showLoginForm.value = false;
+  showSignupForm.value = false;
+};
+
+const handleSignupSuccess = () => {
+  showSignupForm.value = false;
+  showLoginForm.value = true;
+};
+
+const handleShowSignup = () => {
+  showLoginForm.value = false;
+  showSignupForm.value = true;
+};
+
+const showLogin = () => {
+  showLoginForm.value = true;
+  showSignupForm.value = false;
+};
+
+const handleShowLogin = () => {
+  showLoginForm.value = true;
+  showSignupForm.value = false;
 };
 </script>
 
 <style>
-
+/* 추가 스타일이 필요한 경우 여기에 작성하세요 */
 </style>
