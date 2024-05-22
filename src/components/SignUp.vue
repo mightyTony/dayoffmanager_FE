@@ -53,14 +53,19 @@
           variant="outlined"
           :rules="[v => !!v || '상호를 입력해 주세요']"
       ></v-text-field>
-      <v-text-field
-          v-model="hireDate"
-          dense
-          placeholder="고용 날짜"
-          prepend-inner-icon="mdi-calendar"
-          variant="outlined"
-          :rules="[v => !!v || '고용 날짜를 입력해 주세요']"
-      ></v-text-field>
+<!--      <v-text-field-->
+<!--          v-model="hireDate"-->
+<!--          dense-->
+<!--          placeholder="고용 날짜"-->
+<!--          prepend-inner-icon="mdi-calendar"-->
+<!--          variant="outlined"-->
+<!--          :rules="[v => !!v || '고용 날짜를 입력해 주세요']"-->
+<!--      ></v-text-field>-->
+      <div>
+        <DatePicker v-model="hireDate" :format="formatDate" locale="ko" :enable-time-picker="false"/>
+<!--        <p>선택된 날짜: {{ hireDate }}</p>-->
+      </div>
+
       <v-btn
           class="mb-8"
           color="blue"
@@ -75,19 +80,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {ref, watch} from 'vue';
 import apiClient from "../config/axios.js";
+import DatePicker from '@vuepic/vue-datepicker';
 
 const userId = ref('');
 const password = ref('');
 const name = ref('');
 const email = ref('');
 const phoneNumber = ref('');
-const hireDate = ref('');
 const brandName = ref('');
 const visible = ref(false);
 const valid = ref(false);
 const form = ref(null);
+const hireDate = ref(null);
+
+// 날짜 형식 설정 함수
+const formatDate = (date) => {
+  return date.toISOString().substring(0,10);
+}
 
 const userIdRules = [
   v => !!v || '아이디를 입력해 주세요',
@@ -150,5 +161,6 @@ const showLogin = () => {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+@import '@vuepic/vue-datepicker/dist/main.css';
 </style>
