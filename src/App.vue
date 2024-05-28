@@ -19,70 +19,51 @@
             <v-btn block @click="logout">Logout</v-btn>
           </div>
         </template>
-        <template v-else v-slot:append>
+        <template v-if="!isLoggedIn" v-slot:append>
           <div class="pa-2">
-            <v-btn block @click="showLogin">Login</v-btn>
+            <v-btn block @click="goToLogin">Login</v-btn>
           </div>
         </template>
       </v-navigation-drawer>
 
       <v-main scrollable permanent class="bg-blue pt-8">
-        <div v-if="showLoginForm">
-          <Login @login-success="handleLoginSuccess" @show-signup="handleShowSignup" />
-        </div>
-        <div v-else-if="showSignupForm">
-          <SignUp @signup-success="handleSignupSuccess" @show-login="handleShowLogin" />
-        </div>
-        <div v-else>
-          <h1>Welcome to the Dashboard</h1>
-        </div>
+        <router-view></router-view>
       </v-main>
     </v-container>
   </v-app>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
-import Login from './components/Login.vue';
+import { computed } from 'vue';
 import { useUserStore } from './store/userStore.js';
-import SignUp from "./components/SignUp.vue";
+import {useRouter} from "vue-router";
 
 const userStore = useUserStore();
+const router = useRouter();
 
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 const userName = computed(() => userStore.userName);
-const showLoginForm = ref(true);
-const showSignupForm = ref(false);
 
 const logout = () => {
   userStore.logout();
 };
 
 const handleLoginSuccess = () => {
-  showLoginForm.value = false;
-  showSignupForm.value = false;
+  // 로그인 성공 후 적절한 라우팅으로 대체해야 할 수 있습니다.
+  // 예: router.push('/dashboard');
 };
 
 const handleSignupSuccess = () => {
-  showSignupForm.value = false;
-  showLoginForm.value = true;
+  // 회원가입 성공 후 적절한 라우팅으로 대체해야 할 수 있습니다.
+  // 예: router.push('/login');
 };
 
-const handleShowSignup = () => {
-  showLoginForm.value = false;
-  showSignupForm.value = true;
-};
-
-const showLogin = () => {
-  showLoginForm.value = true;
-  showSignupForm.value = false;
-};
-
-const handleShowLogin = () => {
-  showLoginForm.value = true;
-  showSignupForm.value = false;
+// 로그인 페이지로 이동
+const goToLogin = () => {
+  router.push('/login');
 };
 </script>
+
 
 <style>
 /* 추가 스타일이 필요한 경우 여기에 작성하세요 */

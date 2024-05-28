@@ -34,9 +34,9 @@
         로그인
       </v-btn>
       <v-card-text class="text-center">
-        <a class="text-blue text-decoration-none" href="#" @click="showSignup">
+        <router-link class="text-blue text-decoration-none" to="/signup">
           지금 가입하기 <v-icon icon="mdi-chevron-right"></v-icon>
-        </a>
+        </router-link>
       </v-card-text>
     </v-card>
   </div>

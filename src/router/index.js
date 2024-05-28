@@ -2,14 +2,15 @@
 
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
-import App from "../App.vue";
-import UserUpdate from "../components/UserUpdate.vue"; // 로그인 컴포넌트 경로에 맞게 수정
+import UserUpdate from "../components/UserUpdate.vue";
+import SignUp from "../components/SignUp.vue";
+import Home from "../components/Home.vue"; // 로그인 컴포넌트 경로에 맞게 수정
 
 const routes = [
     // 다른 라우트 설정
     {
         path: '/',
-        component: App,
+        component: Home,
     },
     {
         path: '/login',
@@ -20,6 +21,11 @@ const routes = [
         name: 'Setting',
         component: UserUpdate
     },
+    {
+        path: '/signup',
+        name: 'SignUp',
+        component: SignUp
+    }
 ];
 
 const router = createRouter({
