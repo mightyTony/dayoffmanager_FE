@@ -88,7 +88,9 @@
 import {ref, watch} from 'vue';
 import apiClient from "../config/axios.js";
 import DatePicker from '@vuepic/vue-datepicker';
+import {useRouter} from "vue-router";
 
+const router= useRouter();
 const userId = ref('');
 const password = ref('');
 const name = ref('');
@@ -153,6 +155,7 @@ const handleSignup = async () => {
     if (response.status === 200) {
       alert('회원가입 성공');
       emits('signup-success');
+      await router.push('/');
     } else {
       throw new Error('회원가입 실패');
     }

@@ -47,12 +47,14 @@ import { ref } from 'vue';
 import axios from "axios";
 import apiClient from "../config/axios.js";
 import { useUserStore } from '../store/userStore.js';
+import {useRouter} from "vue-router";
 
 const userId = ref('');
 const password = ref('');
 const visible = ref(false);
 const userStore = useUserStore();
 const emits = defineEmits(['login-success', 'show-signup']);
+const router = useRouter();
 
 const toggleVisibility = () => {
   visible.value = !visible.value;
@@ -102,8 +104,8 @@ const handleLogin = async () => {
     const userData = await login(userId.value, password.value);
 
     userStore.setUserData(userData);
-
     emits('login-success');
+    router.push('/');
   } catch (error) {
     console.error('로그인 실패:', error);
     alert(error.message);

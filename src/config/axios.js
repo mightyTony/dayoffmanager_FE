@@ -5,6 +5,7 @@ const apiClient = axios.create({
     headers: {
         'Content-Type' : "application/json",
     },
+    withCredentials: true // 쿠키 전송 허용
 });
 
 export default apiClient;
