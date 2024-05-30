@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import apiClient from "../config/axios.js";
 
 export const useUserStore = defineStore('user', {
+    persist: true,
     state: () => ({
         accessToken: null,
         userData: null,
@@ -16,6 +17,43 @@ export const useUserStore = defineStore('user', {
             this.userData = userData;
             this.isLoggedIn = true;
             this.userName = userData.name;
+        },
+        async login(userId, password) {
+            try {
+                const response = await apiClient.post('/auth/login', {
+                    user_id: userId,
+                    password: password
+                });
+
+                if (response.status !== 200) {
+                    throw new Error('로그인 실패');
+                }
+
+                const accessToken = response.headers['authorization'];
+                if (!accessToken) {
+                    throw new Error('토큰이 없습니다.');
+                }
+
+                this.setAccessToken(accessToken);
+                localStorage.setItem('accessToken', accessToken);
+                const expirationTime = Date.now() + 60 * 60 * 1000; // 1시간
+                localStorage.setItem('accessTokenExpiration', expirationTime);
+
+                const userData = response.data.data;
+
+                if (userData.status === 'PENDING') {
+                    throw new Error('해당 업체에 승인 되지 않은 유저 입니다.');
+                }
+
+                this.setUserData(userData);
+
+                //router = useRouter();
+                //router.push('/'); // 로그인 후 홈페이지로 리다이렉트
+
+            } catch (error) {
+                console.error('로그인 요청 실패:', error.message);
+                throw error; // 에러를 던져주어 UI에서 처리할 수 있게 함
+            }
         },
         async logout() {
             try {
@@ -37,6 +75,7 @@ export const useUserStore = defineStore('user', {
                 this.isLoggedIn = false;
                 this.userName = 'Anonymous';
 
+                localStorage.removeItem('user');
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('accessTokenExpiration');
             } catch (error) {
@@ -46,10 +85,3 @@ export const useUserStore = defineStore('user', {
     },
 });
 
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    console.log("모든 쿠키: ", document.cookie);  // 모든 쿠키 로그 출력 (디버깅 용도)
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}

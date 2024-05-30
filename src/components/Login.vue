@@ -61,49 +61,13 @@ const toggleVisibility = () => {
 };
 
 // 로그인 함수 정의
-const login = async (userId, password) => {
-  try {
-    const response = await apiClient.post('/auth/login', {
-      user_id: userId,
-      password: password
-    });
-
-    if (response.status !== 200) {
-      throw new Error('로그인 실패');
-    }
-
-    const accessToken = response.headers['authorization'];
-    if (!accessToken) {
-      throw new Error('토큰이 없습니다.');
-    }
-
-    localStorage.setItem('accessToken', accessToken);
-    userStore.setAccessToken(accessToken);
-
-    const expirationTime = Date.now() + 60 * 60 * 1000; // 1시간
-    localStorage.setItem('accessTokenExpiration', expirationTime);
-
-    const userData = response.data.data;
-
-    if (userData.status === 'PENDING') {
-      throw new Error('해당 업체에 승인 되지 않은 유저 입니다.');
-    }
-
-    return userData;
-  } catch (error) {
-    if (error.response && error.response.status === 403) {
-      throw new Error(error.response.data.message || '로그인 요청 실패: 승인되지 않은 사용자입니다.');
-    }
-    throw new Error('로그인 요청 실패: ' + error.message);
-  }
-};
 
 // 로그인 처리 메서드
 const handleLogin = async () => {
   try {
-    const userData = await login(userId.value, password.value);
+    await userStore.login(userId.value, password.value);
 
-    userStore.setUserData(userData);
+    //const userData = userStore.setUserData(userData);
     emits('login-success');
     router.push('/');
   } catch (error) {
