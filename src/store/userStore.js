@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import apiClient from "../config/axios.js";
+import router from "../router/index.js";
 
 export const useUserStore = defineStore('user', {
     persist: true,
@@ -8,10 +9,19 @@ export const useUserStore = defineStore('user', {
         userData: null,
         isLoggedIn: false,
         userName: 'Anonymous',
+        accessTokenExpiration: null,
     }),
+    getters: {
+        isTokenExpired: (state) => {
+            return Date.now() > state.accessTokenExpiration;
+        }
+    },
     actions: {
-        setAccessToken(accessToken) {
+        setAccessToken(accessToken, expirationTime) {
             this.accessToken = accessToken;
+            this.accessTokenExpiration = expirationTime;
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('accessTokenExpiration', expirationTime);
         },
         setUserData(userData) {
             this.userData = userData;
@@ -24,7 +34,6 @@ export const useUserStore = defineStore('user', {
                     user_id: userId,
                     password: password
                 });
-
                 if (response.status !== 200) {
                     throw new Error('로그인 실패');
                 }
@@ -34,47 +43,35 @@ export const useUserStore = defineStore('user', {
                     throw new Error('토큰이 없습니다.');
                 }
 
-                this.setAccessToken(accessToken);
-                localStorage.setItem('accessToken', accessToken);
-                const expirationTime = Date.now() + 60 * 60 * 1000; // 1시간
-                localStorage.setItem('accessTokenExpiration', expirationTime);
+                const expirationTime = Date.now() + 5000//60 * 60 * 1000; // 1시간 후 만료
+                this.setAccessToken(accessToken, expirationTime);
 
                 const userData = response.data.data;
-
                 if (userData.status === 'PENDING') {
                     throw new Error('해당 업체에 승인 되지 않은 유저 입니다.');
                 }
-
                 this.setUserData(userData);
-
-                //router = useRouter();
-                //router.push('/'); // 로그인 후 홈페이지로 리다이렉트
-
             } catch (error) {
                 console.error('로그인 요청 실패:', error.message);
-                throw error; // 에러를 던져주어 UI에서 처리할 수 있게 함
+                throw error;
+            }
+        },
+        checkTokenExpiration() {
+            if (this.isLoggedIn && this.isTokenExpired) {
+                alert('토큰 만료되어 로그아웃 합니다');
+                this.logout();
             }
         },
         async logout() {
             try {
-
-                //AccessToken
-                const token = localStorage.getItem('accessToken');
-
-                const headers = {
-                    'Authorization': `${token}`
-                };
-
+                // AccessToken
+                const token = this.accessToken;
+                const headers = { 'Authorization': `${token}` };
                 // 서버에 로그아웃 요청
                 await apiClient.post('/auth/logout', {}, { headers });
                 console.log('Logged out on server.');
-
                 // 클라이언트 측 정리
-                this.accessToken = null;
-                this.userData = null;
-                this.isLoggedIn = false;
-                this.userName = 'Anonymous';
-
+                this.$reset(); // 모든 state를 초기화
                 localStorage.removeItem('user');
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('accessTokenExpiration');
@@ -84,4 +81,3 @@ export const useUserStore = defineStore('user', {
         },
     },
 });
-

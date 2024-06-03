@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import {computed, onMounted} from 'vue';
 import { useUserStore } from './store/userStore.js';
 import {useRouter} from "vue-router";
 
@@ -44,19 +44,22 @@ const router = useRouter();
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 const userName = computed(() => userStore.userName);
 
+onMounted(() => {
+  userStore.checkTokenExpiration(); // 페이지 로드 시 토큰 만료 확인, 만료 시 로그아웃
+})
 const logout = () => {
   userStore.logout();
 };
 
-const handleLoginSuccess = () => {
-  // 로그인 성공 후 적절한 라우팅으로 대체해야 할 수 있습니다.
-  // 예: router.push('/dashboard');
-};
-
-const handleSignupSuccess = () => {
-  // 회원가입 성공 후 적절한 라우팅으로 대체해야 할 수 있습니다.
-  // 예: router.push('/login');
-};
+// const handleLoginSuccess = () => {
+//   // 로그인 성공 후 적절한 라우팅으로 대체해야 할 수 있습니다.
+//   // 예: router.push('/dashboard');
+// };
+//
+// const handleSignupSuccess = () => {
+//   // 회원가입 성공 후 적절한 라우팅으로 대체해야 할 수 있습니다.
+//   // 예: router.push('/login');
+// };
 
 // 로그인 페이지로 이동
 const goToLogin = () => {
