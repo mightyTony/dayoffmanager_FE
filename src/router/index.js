@@ -5,7 +5,8 @@ import Login from '../components/Login.vue';
 import UserUpdate from "../components/UserUpdate.vue";
 import SignUp from "../components/SignUp.vue";
 import Home from "../components/Home.vue";
-import {useUserStore} from "../store/userStore.js"; // 로그인 컴포넌트 경로에 맞게 수정
+import {useUserStore} from "../store/userStore.js";
+import CompanyRegister from "../components/CompanyRegister.vue"; // 로그인 컴포넌트 경로에 맞게 수정
 
 const routes = [
     // 다른 라우트 설정
@@ -31,6 +32,12 @@ const routes = [
         name: 'SignUp',
         component: SignUp,
         meta: { auth : false }
+    },
+    {
+        path: '/register/company',
+        name: 'CompanyRegister',
+        component: CompanyRegister,
+        meta: { auth: false }
     }
 ];
 

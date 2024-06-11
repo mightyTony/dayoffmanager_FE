@@ -5,12 +5,12 @@
     <v-form ref="form" v-model="valid">
 
       <v-text-field
-          v-model="brandName"
+          v-model="businessNumber"
           dense
-          placeholder="회사명"
+          placeholder="회사 사업자번호"
           prepend-inner-icon="mdi-domain"
           variant="outlined"
-          :rules="[v => !!v || '상호를 입력해 주세요']"
+          :rules="businessNumberRules"
       ></v-text-field>
 
       <v-text-field
@@ -66,7 +66,7 @@
 <!--          :rules="[v => !!v || '고용 날짜를 입력해 주세요']"-->
 <!--      ></v-text-field>-->
       <div>
-        <DatePicker v-model="hireDate" :format="formatDate" locale="ko" :enable-time-picker="false"/>
+        <DatePicker v-model="hireDate" :format="formatDate" locale="ko" :enable-time-picker="false" placeholder="입사 날짜" />
 <!--        <p>선택된 날짜: {{ hireDate }}</p>-->
       </div>
 
@@ -96,7 +96,7 @@ const password = ref('');
 const name = ref('');
 const email = ref('');
 const phoneNumber = ref('');
-const brandName = ref('');
+const businessNumber = ref('');
 const visible = ref(false);
 const valid = ref(false);
 const form = ref(null);
@@ -104,8 +104,24 @@ const hireDate = ref(null);
 
 // 날짜 형식 설정 함수
 const formatDate = (date) => {
-  return date.toISOString().substring(0,10);
+  if (!date) return '';
+  const d = new Date(date);
+  let month = `${d.getMonth() + 1}`; // 월은 0부터 시작하므로 1을 추가합니다.
+  let day = `${d.getDate()}`;
+  const year = d.getFullYear();
+
+  // 한 자리 수 월과 일에 '0'을 추가합니다.
+  month = month.length < 2 ? '0' + month : month;
+  day = day.length < 2 ? '0' + day : day;
+
+  return `${year}-${month}-${day}`; // ISO 형식인 YYYY-mm-DD 로 변환
+  //return date.toISOString().substring(0,10); Timezone 이슈
 }
+
+const businessNumberRules = [
+    v => !!v || '사업자 번호를 입력해 주세요',
+    v => (v && v.length === 10) || '사업자등록번호는 10자리여야 합니다.'
+]
 
 const userIdRules = [
   v => !!v || '아이디를 입력해 주세요',
@@ -149,18 +165,24 @@ const handleSignup = async () => {
       email: email.value,
       phone_number: phoneNumber.value,
       hire_date: hireDate.value,
-      b_nm: brandName.value,
+      b_no: businessNumber.value,
     });
 
     if (response.status === 200) {
       alert('회원가입 성공');
       emits('signup-success');
       await router.push('/');
-    } else {
-      throw new Error('회원가입 실패');
+    } else if(response.status === 400){
+      throw new Error(`에러: ${response.status} - ${response.data.message}`);
     }
   } catch (error) {
-    alert('회원가입 요청 실패: ' + error.message);
+    if (error.response && error.response.data && error.response.data.message) {
+      // 서버에서 제공한 에러 메시지를 alert로 보여줌
+      alert(`회원가입 요청 실패: ${error.response.data.message}`);
+    }else {
+      // 기타 에러 메시지
+      alert(`회원가입 요청 실패: ${error.message}`);
+    }
   }
 };
 

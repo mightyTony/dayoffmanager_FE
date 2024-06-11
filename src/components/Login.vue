@@ -38,6 +38,11 @@
           지금 가입하기 <v-icon icon="mdi-chevron-right"></v-icon>
         </router-link>
       </v-card-text>
+      <v-card-text class="text-center">
+        <router-link class="text-blue text-decoration-none" to="/register/company">
+          회사 등록하기 <v-icon icon="mdi-chevron-right"></v-icon>
+        </router-link>
+      </v-card-text>
     </v-card>
   </div>
 </template>
