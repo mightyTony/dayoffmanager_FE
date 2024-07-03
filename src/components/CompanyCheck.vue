@@ -14,7 +14,7 @@
       ></v-text-field>
 
       <DatePicker
-          v-model="startDate"
+          v-model="rawStartDate"
           :format="formatStartDate"
           placeholder="개업일자"
           class="date-picker input-field"
@@ -51,22 +51,32 @@
           @click="searchCompany"
           :disabled="!valid"
       >사업자 정보 검색</v-btn>
+
     </v-form>
   </v-card>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import apiClient from "../config/axios.js";
 import DatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
 const businessNumber = ref('');
-const startDate = ref('');
+const rawStartDate = ref('');
+const startDate = computed({
+  get: () => formatStartDate(rawStartDate.value),
+  set: (value) => {
+    rawStartDate.value = value;
+  }
+})
 const representativeName = ref('');
 const companyName = ref('');
 const valid = ref(false);
 const form = ref(null);
+
+//FIXME
+const emits = defineEmits(['update-data','close-modal']);
 
 const formatStartDate = (date) => {
   if (!date) return '';
@@ -110,17 +120,29 @@ const searchCompany = async () => {
     });
 
     if (response.status === 200) {
-      alert('사업자 정보 검색 성공');
+      console.log(response.data.data);
+      console.log("TeST : ", response.data.data.data[0]);
+      const result = response.data.data.data[0]; // 배열의 첫 번째 요소에 접근
+      if (result.valid === '01') {
+        //FIXME
+        emits('update-data', result)
+        emits('close-modal');
+        alert('검증/조회 : 성공');
+      } else if (result.valid === '02') {
+        alert('검증/조회 : 실패');
+      }
     } else {
       throw new Error(`Error: ${response.status} - ${response.data.message}`);
     }
   } catch (error) {
+    console.error('Search Failed: ', error);
     if (error.response && error.response.data && error.response.data.message) {
       alert(`사업자 정보 검색 실패: ${error.response.data.message}`);
     } else {
       alert(`사업자 정보 검색 실패: ${error.message}`);
     }
   }
+
 };
 </script>
 

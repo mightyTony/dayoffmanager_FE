@@ -10,10 +10,18 @@ export const useUserStore = defineStore('user', {
         isLoggedIn: false,
         userName: 'Anonymous',
         accessTokenExpiration: null,
+        roles: [],
     }),
     getters: {
+        isMaster: (state) => {
+            return state.roles?.includes('MASTER');
+        },
+        isAdmin: (state) => {
+            //console.log("ROLE : ", state.roles);
+            return state.roles?.includes('ADMIN');
+        },
         isTokenExpired: (state) => {
-            return Date.now() > state.accessTokenExpiration;
+            return state.accessTokenExpiration && Date.now() > state.accessTokenExpiration;  //Date.now() > state.accessTokenExpiration;
         }
     },
     actions: {
@@ -27,6 +35,8 @@ export const useUserStore = defineStore('user', {
             this.userData = userData;
             this.isLoggedIn = true;
             this.userName = userData.name;
+            this.roles = userData.roles || [];
+            //console.log('IN userDATA roles :', userData.roles)
         },
         async login(userId, password) {
             try {
@@ -43,6 +53,7 @@ export const useUserStore = defineStore('user', {
                     throw new Error('토큰이 없습니다.');
                 }
 
+                //FIXME
                 const expirationTime = Date.now() + 5000//60 * 60 * 1000; // 1시간 후 만료
                 this.setAccessToken(accessToken, expirationTime);
 
@@ -56,11 +67,15 @@ export const useUserStore = defineStore('user', {
                 throw error;
             }
         },
-        checkTokenExpiration() {
+        // FIXME 자동 로그아웃이 아닌 토큰 갱신으로 구현 필요
+        async checkTokenExpirationAndRefreshToken() {
             if (this.isLoggedIn && this.isTokenExpired) {
-                alert('토큰 만료되어 로그아웃 합니다');
-                this.logout();
+                alert('토큰 만료되어 갱신 중');
+                await this.refreshAccessTokenByRefreshToken();
+                //this.refreshAccessTokenByRefreshToken();
+                //this.logout();
             }
+
         },
         async logout() {
             try {
@@ -79,5 +94,36 @@ export const useUserStore = defineStore('user', {
                 console.error('로그아웃 실패:', error);
             }
         },
+
+        async refreshAccessTokenByRefreshToken() {
+            const timeout = 5000;
+
+            const response = await apiClient
+                .post('/auth/refresh', {timeout})
+                .then(response => {
+                    console.log(response.data);
+                    if(response.status === 200) {
+                        this.setAccessToken(response.data.data.accessToken, Date.now() + 5000);
+                        console.log("토큰 갱신됨 !")
+                    } else {
+                        throw new Error("리프레시 토큰을 이용 할 수 없음");
+                    }
+                })
+                .catch(error => {
+                    // 타임아웃 또는 요청 실패
+                    this.handleRefreshTokenError();
+                    if (error.code === 'ECONNABORTED') {
+                        console.log("요청이 타임 아웃 됨");
+                    } else {
+                        console.error('요청 실패', error);
+                    }
+                })
+        },
+
+        handleRefreshTokenError() {
+            this.logout().then(r => router.push('/login'));
+        }
+
+
     },
 });

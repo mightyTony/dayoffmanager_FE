@@ -11,7 +11,8 @@
           ></v-list-item>
           <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
           <v-list-item prepend-icon="mdi-account-box" title="Account"></v-list-item>
-          <v-list-item prepend-icon="mdi-gavel" title="Admin"></v-list-item>
+          <v-list-item v-if="isAdmin" prepend-icon="mdi-gavel" title="Admin"></v-list-item>
+          <v-list-item v-if="isMaster" prepend-icon="mdi-crown" title="Master"></v-list-item>
         </v-list>
 
         <template v-if="isLoggedIn" v-slot:append>
@@ -37,15 +38,20 @@
 import {computed, onMounted} from 'vue';
 import { useUserStore } from './store/userStore.js';
 import {useRouter} from "vue-router";
+import apiClient from "./config/axios.js";
 
 const userStore = useUserStore();
 const router = useRouter();
 
+const isAdmin = computed(()=> userStore.isAdmin);
+const isMaster = computed(()=> userStore.isMaster);
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 const userName = computed(() => userStore.userName);
 
-onMounted(() => {
-  userStore.checkTokenExpiration(); // 페이지 로드 시 토큰 만료 확인, 만료 시 로그아웃
+onMounted(async () => {
+  await userStore.checkTokenExpirationAndRefreshToken();
+  console.log("갱신 완료 ! ");
+  //userStore.checkTokenExpiration(); // 페이지 로드 시 토큰 만료 확인, 만료 시 로그아웃
 })
 const logout = () => {
   userStore.logout();
@@ -65,6 +71,30 @@ const logout = () => {
 const goToLogin = () => {
   router.push('/login');
 };
+
+// apiClient.interceptors.response.use(null, (error) => {
+//   return error.response.use(null, userStore.refreshAccessTokenByRefreshToken);
+// })
+
+
+// 인터셉터 설정
+apiClient.interceptors.response.use(
+    response => response, // 정상 응답 처리
+    async error => { // 오류 응답 처리
+      const originalRequest = error.config;
+      if (error.response && error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true; // 이 요청에 대한 재시도 플래그 설정
+        try {
+          await userStore.refreshAccessTokenByRefreshToken(); // 토큰 갱신 시도
+          return apiClient(originalRequest); // 원래 요청 재시도
+        } catch (e) {
+          return Promise.reject(e); // 토큰 갱신 실패 처리
+        }
+      }
+      return Promise.reject(error); // 기타 모든 오류를 재반환
+    }
+);
+
 </script>
 
 

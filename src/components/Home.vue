@@ -17,6 +17,15 @@
     <v-card-actions class="link-section">
       <v-btn text :href="memoirLink" target="_blank">해당 프로젝트를 만들며 시행착오 스토리 링크...</v-btn>
     </v-card-actions>
+
+    <v-img
+        src="src/assets/say.jpg"
+        alt="github_link"
+        class="my-5"
+        @click="goToGitHub"
+        style="cursor: pointer; max-width: 20%; height: auto;"
+    ></v-img>
+
   </v-container>
 </template>
 
@@ -43,6 +52,11 @@ const usage = ref([
 ]);
 
 const memoirLink = 'https://synclair.tistory.com/category/Spring/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8';
+const githubLink = 'https://github.com/mightyTony'; // GitHub 링크로 변경하세요.
+
+function goToGitHub() {
+  window.open(githubLink, '_blank');
+}
 </script>
 
 <style scoped>
