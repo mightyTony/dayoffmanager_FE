@@ -101,9 +101,12 @@ export const useUserStore = defineStore('user', {
             const response = await apiClient
                 .post('/auth/refresh', {timeout})
                 .then(response => {
-                    console.log(response.data);
+                    console.log("response.data : ",response.data);
+                    console.log("response.data.data : ", response.data.data)
+                    console.log("response.data.data.accessToken : ", response.data.data.accessToken)
                     if(response.status === 200) {
-                        this.setAccessToken(response.data.data.accessToken, Date.now() + 5000);
+                        this.setAccessToken(response.data.data, Date.now() + 5000);
+                        //this.setAccessToken(response.data.data.accessToken, Date.now() + 5000);
                         console.log("토큰 갱신됨 !")
                     } else {
                         throw new Error("리프레시 토큰을 이용 할 수 없음");
@@ -115,7 +118,9 @@ export const useUserStore = defineStore('user', {
                     if (error.code === 'ECONNABORTED') {
                         console.log("요청이 타임 아웃 됨");
                     } else {
-                        console.error('요청 실패', error);
+                        this.$reset();
+                        //this.logout().then(r => router.push('/login'));
+                        console.error('요청 실패, 홈 화면으로 이동합니다', error);
                     }
                 })
         },
