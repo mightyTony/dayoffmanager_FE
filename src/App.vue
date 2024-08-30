@@ -3,12 +3,13 @@
     <v-container>
       <v-navigation-drawer class="bg-grey-lighten-2" permanent>
         <v-list color="transparent">
-          <v-list-item
-              lines="two"
-              :prepend-avatar="isLoggedIn ? 'https://randomuser.me/api/portraits/women/81.jpg' : 'https://randomuser.me/api/portraits/lego/7.jpg'"
-              :subtitle="isLoggedIn ? '로그인 중' : '로그인 해주세요'"
-              :title="userName"
-          ></v-list-item>
+          <v-list-item :prepend-avatar="isLoggedIn ? 'https://randomuser.me/api/portraits/women/81.jpg' : 'https://randomuser.me/api/portraits/lego/7.jpg'">
+            <v-list-item-content>
+              <!-- userName과 departmentName 결합하여 표시 -->
+              <v-list-item-title>{{ userName }}</v-list-item-title>
+              <v-list-item-subtitle v-text="isLoggedIn ? departmentName : '로그인 해주세요'"></v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
           <v-list-item prepend-icon="mdi-account-box" title="Account"></v-list-item>
           <v-list-item v-if="isAdmin" prepend-icon="mdi-gavel" title="Admin"></v-list-item>
@@ -47,6 +48,7 @@ const isAdmin = computed(()=> userStore.isAdmin);
 const isMaster = computed(()=> userStore.isMaster);
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 const userName = computed(() => userStore.userName);
+const departmentName = computed(() => userStore.departmentName);
 
 onMounted(async () => {
   await userStore.checkTokenExpirationAndRefreshToken();
@@ -77,23 +79,6 @@ const goToLogin = () => {
 // })
 
 
-// 인터셉터 설정
-apiClient.interceptors.response.use(
-    response => response, // 정상 응답 처리
-    async error => { // 오류 응답 처리
-      const originalRequest = error.config;
-      if (error.response && error.response.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true; // 이 요청에 대한 재시도 플래그 설정
-        try {
-          await userStore.refreshAccessTokenByRefreshToken(); // 토큰 갱신 시도
-          return apiClient(originalRequest); // 원래 요청 재시도
-        } catch (e) {
-          return Promise.reject(e); // 토큰 갱신 실패 처리
-        }
-      }
-      return Promise.reject(error); // 기타 모든 오류를 재반환
-    }
-);
 
 </script>
 

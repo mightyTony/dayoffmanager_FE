@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', {
         userName: 'Anonymous',
         accessTokenExpiration: null,
         roles: [],
+        departmentName : null,
     }),
     getters: {
         isMaster: (state) => {
@@ -21,7 +22,10 @@ export const useUserStore = defineStore('user', {
             return state.roles?.includes('ADMIN');
         },
         isTokenExpired: (state) => {
-            return state.accessTokenExpiration && Date.now() > state.accessTokenExpiration;  //Date.now() > state.accessTokenExpiration;
+            return Date.now() > state.accessTokenExpiration;  //Date.now() > state.accessTokenExpiration;
+        },
+        getAccessToken: (state) => {
+            return state.accessToken;
         }
     },
     actions: {
@@ -36,6 +40,7 @@ export const useUserStore = defineStore('user', {
             this.isLoggedIn = true;
             this.userName = userData.name;
             this.roles = userData.roles || [];
+            this.departmentName = userData.departmentName;
             //console.log('IN userDATA roles :', userData.roles)
         },
         async login(userId, password) {
@@ -54,8 +59,11 @@ export const useUserStore = defineStore('user', {
                 }
 
                 //FIXME
-                const expirationTime = Date.now() + 5000//60 * 60 * 1000; // 1시간 후 만료
+                const expirationTime = Date.now() + 60 * 60 * 1000; // 1시간 후 만료
                 this.setAccessToken(accessToken, expirationTime);
+
+                console.log("res.data : ", response.data)
+                console.log("res.data.data : " , response.data.data)
 
                 const userData = response.data.data;
                 if (userData.status === 'PENDING') {
@@ -69,7 +77,7 @@ export const useUserStore = defineStore('user', {
         },
         // FIXME 자동 로그아웃이 아닌 토큰 갱신으로 구현 필요
         async checkTokenExpirationAndRefreshToken() {
-            if (this.isLoggedIn && this.isTokenExpired) {
+            if (!this.isLoggedIn && this.isTokenExpired) {
                 alert('토큰 만료되어 갱신 중');
                 await this.refreshAccessTokenByRefreshToken();
                 //this.refreshAccessTokenByRefreshToken();
@@ -105,7 +113,7 @@ export const useUserStore = defineStore('user', {
                     console.log("response.data.data : ", response.data.data)
                     console.log("response.data.data.accessToken : ", response.data.data.accessToken)
                     if(response.status === 200) {
-                        this.setAccessToken(response.data.data, Date.now() + 5000);
+                        this.setAccessToken(response.data.data, Date.now() + 60 * 60 * 1000); // + 5000);
                         //this.setAccessToken(response.data.data.accessToken, Date.now() + 5000);
                         console.log("토큰 갱신됨 !")
                     } else {
