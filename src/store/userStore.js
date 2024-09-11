@@ -77,8 +77,8 @@ export const useUserStore = defineStore('user', {
         },
         // FIXME 자동 로그아웃이 아닌 토큰 갱신으로 구현 필요
         async checkTokenExpirationAndRefreshToken() {
-            if (!this.isLoggedIn && this.isTokenExpired) {
-                alert('토큰 만료되어 갱신 중');
+            if (this.isLoggedIn && this.isTokenExpired) {
+                //alert('토큰 만료되어 갱신 중');
                 await this.refreshAccessTokenByRefreshToken();
                 //this.refreshAccessTokenByRefreshToken();
                 //this.logout();
@@ -115,7 +115,7 @@ export const useUserStore = defineStore('user', {
                     if(response.status === 200) {
                         this.setAccessToken(response.data.data, Date.now() + 60 * 60 * 1000); // + 5000);
                         //this.setAccessToken(response.data.data.accessToken, Date.now() + 5000);
-                        console.log("토큰 갱신됨 !")
+                        console.log("토큰 갱신됨 !!")
                     } else {
                         throw new Error("리프레시 토큰을 이용 할 수 없음");
                     }
