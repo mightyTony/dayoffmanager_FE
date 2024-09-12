@@ -52,7 +52,7 @@ const departmentName = computed(() => userStore.departmentName);
 
 onMounted(async () => {
   await userStore.checkTokenExpirationAndRefreshToken();
-  console.log("갱신 완료 !! ");
+  //console.log("갱신 필요한지 체크");
   //userStore.checkTokenExpiration(); // 페이지 로드 시 토큰 만료 확인, 만료 시 로그아웃
 })
 const logout = () => {
