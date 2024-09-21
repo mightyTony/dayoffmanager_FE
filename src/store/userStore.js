@@ -75,7 +75,6 @@ export const useUserStore = defineStore('user', {
                 throw error;
             }
         },
-        // FIXME 자동 로그아웃이 아닌 토큰 갱신으로 구현 필요
         async checkTokenExpirationAndRefreshToken() {
             if (this.isLoggedIn && this.isTokenExpired) {
                 console.log('토큰 만료되어 갱신 중');
