@@ -7,11 +7,17 @@
             <v-list-item-content>
               <!-- userName과 departmentName 결합하여 표시 -->
               <v-list-item-title>{{ userName }}</v-list-item-title>
-              <v-list-item-subtitle v-text="isLoggedIn ? departmentName : '로그인 해주세요'"></v-list-item-subtitle>
+              <v-list-item-subtitle
+                  v-text="isLoggedIn ? departmentName : '로그인 해주세요'">
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
-          <v-list-item prepend-icon="mdi-account-box" title="Account"></v-list-item>
+          <v-list-item v-if="isLoggedIn"
+                       prepend-icon="mdi-account-box"
+                       title="Account"
+                       @click="navigateToAccount" >
+          </v-list-item>
           <v-list-item v-if="isAdmin" prepend-icon="mdi-gavel" title="Admin"></v-list-item>
           <v-list-item v-if="isMaster" prepend-icon="mdi-crown" title="Master"></v-list-item>
         </v-list>
@@ -57,6 +63,7 @@ onMounted(async () => {
 })
 const logout = () => {
   userStore.logout();
+  router.push('/login');
 };
 
 // const handleLoginSuccess = () => {
@@ -73,7 +80,13 @@ const logout = () => {
 const goToLogin = () => {
   router.push('/login');
 };
-
+const navigateToAccount = () => {
+  if(isLoggedIn.value) {
+    router.push(`/account/${userStore.userData.userId}`)
+  } else {
+    router.push('/login');
+  }
+}
 // apiClient.interceptors.response.use(null, (error) => {
 //   return error.response.use(null, userStore.refreshAccessTokenByRefreshToken);
 // })

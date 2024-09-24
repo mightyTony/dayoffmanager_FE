@@ -23,10 +23,11 @@ const routes = [
         meta: { auth : false }
     },
     {
-        path: '/setting',
-        name: 'Setting',
+        path: '/account/:userId',
+        name: 'Account',
         component: UserUpdate,
-        meta: { auth : true }
+        meta: { auth : true }, // 로그인 필요
+        props: true // props로 userId 전달
     },
     {
         path: '/signup',
@@ -39,7 +40,7 @@ const routes = [
         name: 'CompanyEnroll',
         component: CompanyEnroll,
         meta: { auth: false }
-    }
+    },
 ];
 
 const router = createRouter({

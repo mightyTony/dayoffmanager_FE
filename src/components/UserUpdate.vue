@@ -1,16 +1,19 @@
 <template>
   <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-    <div class="text-subtitle-1 text-medium-emphasis">정보 수정</div>
+    <div class="caption mb-2 bold font-weight-bold">정보 수정</div>
+    <br>
     <v-form ref="form" v-model="valid">
+
+      <div class="caption mb-2">아이디</div>
       <v-text-field
           v-model="userId"
           dense
-          placeholder="아이디"
           prepend-inner-icon="mdi-account-outline"
           variant="outlined"
           :rules="userIdRules"
-          disabled
+          readonly
       ></v-text-field>
+      <div class="caption mb-2">비밀번호</div>
       <v-text-field
           v-model="password"
           :type="visible ? 'text' : 'password'"
@@ -22,6 +25,7 @@
           @click:append-inner="toggleVisibility"
           :rules="passwordRules"
       ></v-text-field>
+      <div class="caption mb-2">이름</div>
       <v-text-field
           v-model="name"
           dense
@@ -30,6 +34,7 @@
           variant="outlined"
           :rules="nameRules"
       ></v-text-field>
+      <div class="caption mb-2">이메일</div>
       <v-text-field
           v-model="email"
           dense
@@ -38,25 +43,39 @@
           variant="outlined"
           :rules="emailRules"
       ></v-text-field>
+      <div class="caption mb-2">전화번호</div>
       <v-text-field
           v-model="phoneNumber"
           dense
-          placeholder="전화번호"
           prepend-inner-icon="mdi-phone"
           variant="outlined"
           :rules="phoneNumberRules"
       ></v-text-field>
+      <div class="caption mb-2">회사명</div>
       <v-text-field
-          v-model="brandName"
+          v-model="companyName"
           dense
-          placeholder="회사명"
           prepend-inner-icon="mdi-domain"
           variant="outlined"
-          :rules="brandNameRules"
+          :rules="companyNameRules"
+          readonly
       ></v-text-field>
-      <div>
-        <DatePicker v-model="hireDate" :format="formatDate" locale="ko" :enable-time-picker="false"/>
-      </div>
+      <div class="caption mb-2">입사날짜</div>
+      <v-text-field
+          v-model="hireDate"
+          dense
+          :format="formatDate"
+          prepend-inner-icon="mdi-calendar-account"
+          variant="outlined"
+          readonly>
+      </v-text-field>
+<!--      <div>-->
+<!--        <DatePicker v-model="hireDate" -->
+<!--                    :format="formatDate" -->
+<!--                    locale="ko" -->
+<!--                    :enable-time-picker="false" -->
+<!--                    :disabled/>-->
+<!--      </div>-->
 
       <v-btn
           class="mb-8"
@@ -78,7 +97,7 @@ import DatePicker from '@vuepic/vue-datepicker';
 import { useUserStore } from '../store/userStore';
 
 const userStore = useUserStore();
-const { userId, name, email, phoneNumber, brandName, hireDate } = userStore.userData;
+const { userId, name, email, phoneNumber, companyName, hireDate } = userStore.userData;
 const password = ref('');
 const visible = ref(false);
 const valid = ref(false);
@@ -107,7 +126,7 @@ const phoneNumberRules = [
 const nameRules = [
   v => !!v || '이름을 입력해 주세요',
 ];
-const brandNameRules = [
+const companyNameRules = [
   v => !!v || '회사명을 입력해 주세요',
 ];
 
@@ -128,7 +147,7 @@ const handleUpdate = async () => {
       email: email.value,
       phone_number: phoneNumber.value,
       hire_date: hireDate.value,
-      brand_name: brandName.value,
+      company_name: companyName.value,
     });
 
     if (response.status === 200) {
@@ -144,4 +163,12 @@ const handleUpdate = async () => {
 
 <style scoped>
 @import '@vuepic/vue-datepicker/dist/main.css';
+.v-text-field--disabled .v-label,
+.v-text-field--disabled .v-input__control {
+  color: #000; /* 검은색으로 설정 */
+}
+
+.v-text-field--disabled {
+  opacity: 1; /* 기본적인 투명도 제거 */
+}
 </style>

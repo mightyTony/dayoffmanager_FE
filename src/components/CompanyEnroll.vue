@@ -41,9 +41,9 @@
 
       <!-- 상호명 입력 필드 -->
       <v-text-field
-          v-model="brandName"
+          v-model="companyName"
           label="상호명"
-          :rules="brandNameRules"
+          :rules="companyNameRules"
           outlined
           dense
           required
@@ -77,7 +77,7 @@ import apiClient from "../config/axios.js";
 const businessNumber = ref('');
 const startDate = ref('');
 const representativeName = ref('');
-const brandName = ref('');
+const companyName = ref('');
 const valid = ref(false);
 const searchDialog = ref(false);
 const router = useRouter();
@@ -99,7 +99,7 @@ const representativeNameRules = [
 ];
 
 // 상호명 검증 규칙
-const brandNameRules = [
+const companyNameRules = [
   v => !!v || '상호명은 필수입니다.'
 ];
 
@@ -112,7 +112,7 @@ const submitForm = async () => {
         b_no : businessNumber.value,
         start_dt : startDate.value,
         p_nm : representativeName.value,
-        b_nm : brandName.value,
+        b_nm : companyName.value,
       });
 
       if(response.status === 200 || response.status === 201) {
@@ -144,7 +144,7 @@ function handleDataUpdate(data) {
   businessNumber.value = request_param.b_no;
   startDate.value = request_param.start_dt;
   representativeName.value = request_param.p_nm;
-  brandName.value = request_param.b_nm;
+  companyName.value = request_param.b_nm;
 }
 </script>
 
