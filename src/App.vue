@@ -3,7 +3,7 @@
     <v-container>
       <v-navigation-drawer class="bg-grey-lighten-2" permanent>
         <v-list color="transparent">
-          <v-list-item :prepend-avatar="isLoggedIn ? 'https://randomuser.me/api/portraits/women/81.jpg' : 'https://randomuser.me/api/portraits/lego/7.jpg'">
+          <v-list-item :prepend-avatar=userProfile>
             <v-list-item-content>
               <!-- userName과 departmentName 결합하여 표시 -->
               <v-list-item-title>{{ userName }}</v-list-item-title>
@@ -12,14 +12,14 @@
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
+          <v-list-item prepend-icon="mdi-view-dashboard" title="대시보드"></v-list-item>
           <v-list-item v-if="isLoggedIn"
                        prepend-icon="mdi-account-box"
-                       title="Account"
+                       title="내 정보"
                        @click="navigateToAccount" >
           </v-list-item>
-          <v-list-item v-if="isAdmin" prepend-icon="mdi-gavel" title="Admin"></v-list-item>
-          <v-list-item v-if="isMaster" prepend-icon="mdi-crown" title="Master"></v-list-item>
+          <v-list-item v-if="isAdmin" prepend-icon="mdi-gavel" title="관리자"></v-list-item>
+          <v-list-item v-if="isMaster" prepend-icon="mdi-crown" title="마스터"></v-list-item>
         </v-list>
 
         <template v-if="isLoggedIn" v-slot:append>
@@ -55,7 +55,7 @@ const isMaster = computed(()=> userStore.isMaster);
 const isLoggedIn = computed(() => userStore.isLoggedIn);
 const userName = computed(() => userStore.userName);
 const departmentName = computed(() => userStore.departmentName);
-
+const userProfile = computed(() => userStore.userProfileImage);
 onMounted(async () => {
   await userStore.checkTokenExpirationAndRefreshToken();
   //console.log("갱신 필요한지 체크");

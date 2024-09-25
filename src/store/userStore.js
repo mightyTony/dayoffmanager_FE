@@ -26,6 +26,9 @@ export const useUserStore = defineStore('user', {
         },
         getAccessToken: (state) => {
             return state.accessToken;
+        },
+        userProfileImage : (state) => {
+            return state.userData?.profileImage ? state.userData.profileImage : 'https://randomuser.me/api/portraits/lego/7.jpg';
         }
     },
     actions: {
@@ -132,6 +135,12 @@ export const useUserStore = defineStore('user', {
                 })
         },
 
+        async updateProfileImage(newImageUrl) {
+            if(this.userData) {
+                this.userData.profileImage = newImageUrl;
+            }
+        }
+        ,
         handleRefreshTokenError() {
             this.logout().then(r => router.push('/login'));
         }
