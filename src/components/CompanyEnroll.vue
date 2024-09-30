@@ -71,7 +71,7 @@
 <script setup>
 import { ref } from 'vue';
 import CompanyCheck from "./CompanyCheck.vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 import apiClient from "../config/axios.js";
 
 const businessNumber = ref('');
@@ -81,6 +81,16 @@ const companyName = ref('');
 const valid = ref(false);
 const searchDialog = ref(false);
 const router = useRouter();
+
+// 날짜 형식 변환 함수
+const convertDateFormat = (dateString) => {
+  if (!dateString || dateString.length !== 8) return '';
+  const year = dateString.slice(0, 4);
+  const month = dateString.slice(4, 6);
+  const day = dateString.slice(6, 8);
+  return `${year}-${month}-${day}`;
+}
+
 // 사업자등록번호 검증 규칙
 const businessNumberRules = [
   v => !!v || '사업자등록번호는 필수입니다.',
@@ -90,7 +100,7 @@ const businessNumberRules = [
 // 개업일자 검증 규칙
 const startDateRules = [
   v => !!v || '개업일자는 필수입니다.',
-  v => /^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/.test(v) || '개업일자는 YYYYMMDD 포맷이어야 합니다.'
+  v => /^\d{4}-\d{2}-\d{2}$/.test(v) || '개업일자는 YYYY-MM-DD 포맷이어야 합니다.'
 ];
 
 // 대표자 성명 검증 규칙
@@ -107,26 +117,20 @@ const companyNameRules = [
 const submitForm = async () => {
   if (valid.value) {
     try {
-      // API 호출 또는 추가 로직
       const response = await apiClient.post('/companies/join', {
-        b_no : businessNumber.value,
-        start_dt : startDate.value,
-        p_nm : representativeName.value,
-        b_nm : companyName.value,
+        b_no: businessNumber.value,
+        start_dt: startDate.value,
+        p_nm: representativeName.value,
+        b_nm: companyName.value,
       });
-
-      if(response.status === 200 || response.status === 201) {
+      if (response.status === 200 || response.status === 201) {
         alert('등록 완료');
         await router.push('/');
       } else {
-        alert(`등록 실패 : ${response.data.data.message}`);
+        alert(`등록 실패 : ${response.data.message}`);
       }
     } catch (error) {
-      if(error.response) {
-        alert(`회사 등록 실패: ${error.response.data.message}`);
-      } else {
-        alert(`회사 등록 실패 : ${error.message}`);
-      }
+      alert(`회사 등록 실패: ${error.response ? error.response.data.message : error.message}`);
     }
   } else {
     alert('입력값을 확인하세요.');
@@ -138,11 +142,9 @@ function openSearchDialog() {
 }
 
 function handleDataUpdate(data) {
-  // 받은 데이터를 필드에 설정
   const request_param = data.request_param;
-
   businessNumber.value = request_param.b_no;
-  startDate.value = request_param.start_dt;
+  startDate.value = convertDateFormat(request_param.start_dt); // 날짜 형식 변환 적용
   representativeName.value = request_param.p_nm;
   companyName.value = request_param.b_nm;
 }
@@ -151,8 +153,8 @@ function handleDataUpdate(data) {
 <style scoped>
 .header-container {
   display: flex;
-  justify-content: space-between; /* 타이틀과 버튼을 좌우 끝으로 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
+  justify-content: space-between;
+  align-items: center;
 }
 
 .form-style {
