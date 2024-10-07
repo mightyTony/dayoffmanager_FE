@@ -9,6 +9,8 @@ import {useUserStore} from "../store/userStore.js";
 import CompanyRegister from "../components/CompanyCheck.vue";
 import CompanyEnroll from "../components/CompanyEnroll.vue";
 import AdminDashboard from "../components/admin/AdminDashboard.vue";
+import AdminApproveUser from "../components/admin/MemberEditModal.vue";
+import AdminMemberList from "../components/admin/AdminMemberList.vue";
 
 
 const routes = [
@@ -48,6 +50,20 @@ const routes = [
         name: 'AdminDashboard',
         component: AdminDashboard,
         meta: { auth: true }
+    },
+    {
+        path: '/approve-user/:userId',
+        name: 'ApproveUser',
+        component: AdminApproveUser,
+        props: true,
+        meta: { auth: true }
+    },
+    {
+        path: '/employee-management',
+        name: 'EmployeeManagement',
+        component: AdminMemberList,
+        meta: { auth: true },
+        props: true
     }
 ];
 

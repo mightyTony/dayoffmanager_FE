@@ -19,7 +19,7 @@
           <td>{{ member.name || '-' }}</td>
           <td>{{ member.hireDate || '-' }}</td>
           <td v-if="member.userId" class="td_btn">
-            <button @click="approveMember(member.userId)">승인</button>
+            <button @click="handleOpen(member)">열기</button>
             <button @click="rejectMember(member.userId)">거절</button>
           </td>
           <td v-else class="td_btn">—</td>
@@ -34,26 +34,29 @@
         <button @click="fetchMembers(currentPage + 1)" :disabled="currentPage + 1 >= members.totalPages">Next</button>
       </nav>
     </div>
+
+    <!-- 사용자 정보 수정 모달 -->
+    <MemberEditModal/>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import {ref, computed, onMounted, nextTick} from 'vue';
 import apiClient from "../../config/axios.js";
+import MemberEditModal from './MemberEditModal.vue';
+import {useListStore} from "../../store/listStore.js";
+import {useUserStore} from "../../store/userStore.js";
 
-const members = ref({
-  content: [],
-  totalPages: 0,
-  totalElements: 0,
-  pageNumber: 0
-});
+const userStore = useUserStore();
+const { userId, name, email, phoneNumber, companyName, companyId,hireDate, profileImage } = userStore.userData;
+const listStore = useListStore();
+const members = ref({ content: [], totalPages: 0, totalElements: 0, pageNumber: 0 });
 const currentPage = ref(0);
 
 const fetchMembers = async (page = 0) => {
   try {
-    const response = await apiClient.get(`/admin/members/pending`, {
-      params: { page, size: 10 }
-    });
+    const response = await apiClient.get(`/admin/members/pending`, { params: { page, size: 10 } });
     members.value = response.data.data;
     currentPage.value = page;
   } catch (error) {
@@ -62,11 +65,7 @@ const fetchMembers = async (page = 0) => {
 };
 
 const displayRows = computed(() => {
-  const rows = [...members.value.content];
-  for (let i = rows.length; i < 10; i++) {
-    rows.push({});
-  }
-  return rows;
+  return members.value.content.length ? members.value.content : Array.from({ length: 10 }, () => ({}));
 });
 
 const paginationRange = computed(() => {
@@ -75,29 +74,28 @@ const paginationRange = computed(() => {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
-const approveMember = (userId) => {
-  console.log("Approve member with ID:", userId);
-
+const handleOpen = async (member) => {
+  listStore.selectMember(member);
 };
 
-const rejectMember = async(userId) => {
-  console.log("Reject member with ID:", userId);
-  try{
+const rejectMember = async (userId) => {
+  try {
     const response = await apiClient.delete(`/admin/reject/${userId}`);
-
-    if(response.status === 200){
+    if (response.status === 200) {
       window.location.reload();
     }
-    // console.log(status, success);
-  }catch(e){
+  } catch (e) {
     console.log(e);
   }
 };
 
 onMounted(() => {
   fetchMembers();
+  listStore.fetchDepartments(companyId);
+  console.log("onMounted fetchDepartments");
 });
 </script>
+
 
 <style scoped>
 table {
@@ -150,9 +148,11 @@ button {
   margin: 0 auto;
   text-align: center;
 }
+
 .td_btn {
   width: 20%;
 }
+
 .td_btn button {
   margin: 0 5px;
   padding: 5px 10px;
@@ -161,8 +161,7 @@ button {
   border-color: black;
 }
 
-/* existing styles */
 .pagination button.active {
-  color: red; /* Active page number highlighted */
+  color: red;
 }
 </style>

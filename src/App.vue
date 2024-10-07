@@ -19,10 +19,7 @@
           <!-- 관리자 메뉴 -->
           <v-menu v-model="menuOpen" offset-y v-if="isAdmin">
             <template #activator="{ props, on }">
-              <v-list-item
-                  v-bind="props"
-
-                  prepend-icon="mdi-gavel">
+              <v-list-item v-bind="props" prepend-icon="mdi-gavel">
                 <v-list-item-title>관리자</v-list-item-title>
               </v-list-item>
             </template>

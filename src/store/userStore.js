@@ -10,17 +10,12 @@ export const useUserStore = defineStore('user', {
         isLoggedIn: false,
         userName: 'Anonymous',
         accessTokenExpiration: null,
-        roles: [],
+        role: null,
         departmentName : null,
     }),
     getters: {
-        isMaster: (state) => {
-            return state.roles?.includes('MASTER');
-        },
-        isAdmin: (state) => {
-            //console.log("ROLE : ", state.roles);
-            return state.roles?.includes('ADMIN');
-        },
+        isMaster: (state) => state.role === 'MASTER',
+        isAdmin: (state) => state.role === 'ADMIN',
         isTokenExpired: (state) => {
             return Date.now() > state.accessTokenExpiration;  //Date.now() > state.accessTokenExpiration;
         },
@@ -29,7 +24,7 @@ export const useUserStore = defineStore('user', {
         },
         userProfileImage : (state) => {
             return state.userData?.profileImage ? state.userData.profileImage : 'https://randomuser.me/api/portraits/lego/7.jpg';
-        }
+        },
     },
     actions: {
         setAccessToken(accessToken, expirationTime) {
@@ -42,7 +37,7 @@ export const useUserStore = defineStore('user', {
             this.userData = userData;
             this.isLoggedIn = true;
             this.userName = userData.name;
-            this.roles = userData.roles || [];
+            this.role = userData.role;
             this.departmentName = userData.departmentName;
             //console.log('IN userDATA roles :', userData.roles)
         },
@@ -143,7 +138,7 @@ export const useUserStore = defineStore('user', {
         ,
         handleRefreshTokenError() {
             this.logout().then(r => router.push('/login'));
-        }
+        },
 
 
     },

@@ -75,7 +75,6 @@ const companyName = ref('');
 const valid = ref(false);
 const form = ref(null);
 
-//FIXME
 const emits = defineEmits(['update-data','close-modal']);
 
 const formatStartDate = (date) => {

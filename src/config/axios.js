@@ -14,7 +14,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     config => {
         const accessToken = useUserStore().getAccessToken // localStorage.getItem('accessToken');
-        console.log("intercept accesstoken :", accessToken);
+        //console.log("intercept accesstoken :", accessToken);
         if(accessToken) {
             config.headers['Authorization'] = `${accessToken}`;
         }
