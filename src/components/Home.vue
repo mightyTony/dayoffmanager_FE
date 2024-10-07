@@ -19,7 +19,7 @@
     </v-card-actions>
 
     <v-img
-        src="src/assets/say.jpg"
+        src="https://d1d3d1g2pexoba.cloudfront.net/image/say.jpg"
         alt="github_link"
         class="my-5"
         @click="goToGitHub"

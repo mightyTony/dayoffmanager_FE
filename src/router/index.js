@@ -11,6 +11,7 @@ import CompanyEnroll from "../components/CompanyEnroll.vue";
 import AdminDashboard from "../components/admin/AdminDashboard.vue";
 import AdminApproveUser from "../components/admin/MemberEditModal.vue";
 import AdminMemberList from "../components/admin/AdminMemberList.vue";
+import DayOffEnroll from "../components/dayoff/DayOffEnroll.vue";
 
 
 const routes = [
@@ -64,6 +65,12 @@ const routes = [
         component: AdminMemberList,
         meta: { auth: true },
         props: true
+    },
+    {
+        path: '/dayOff-apply',
+        name: 'DayOffApply',
+        component: DayOffEnroll,
+        meta: { auth: true },
     }
 ];
 

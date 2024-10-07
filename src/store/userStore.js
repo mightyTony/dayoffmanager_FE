@@ -14,6 +14,7 @@ export const useUserStore = defineStore('user', {
         departmentName : null,
     }),
     getters: {
+        isTeamLeader: (state) => state.role === 'TEAM_LEADER',
         isMaster: (state) => state.role === 'MASTER',
         isAdmin: (state) => state.role === 'ADMIN',
         isTokenExpired: (state) => {
