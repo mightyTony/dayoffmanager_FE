@@ -50,6 +50,21 @@
 
           <!-- 마스터 -->
           <v-list-item v-if="isMaster" prepend-icon="mdi-crown" title="마스터"></v-list-item>
+
+          <!-- 팀장 -->
+          <v-menu v-model="menuOpen" offset-y v-if="isTeamLeader">
+            <template #activator="{ props, on }">
+              <v-list-item v-bind="props" prepend-icon="mdi-gavel">
+                <v-list-item-title>팀장</v-list-item-title>
+              </v-list-item>
+            </template>
+            <v-list>
+              <v-list-item @click="handleNavigate('')">팀 구성</v-list-item>
+              <v-list-item @click="handleNavigate('')">휴가 신청 목록</v-list-item>
+<!--              <v-list-item @click="handleNavigate('')">휴가 히스토리</v-list-item>-->
+
+            </v-list>
+          </v-menu>
         </v-list>
 
         <!-- 로그인/로그아웃 버튼 -->
