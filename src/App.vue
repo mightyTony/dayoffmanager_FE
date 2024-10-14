@@ -27,13 +27,13 @@
             <v-list>
               <v-list-item @click="handleNavigate('admin-dashboard')">등록 신청 목록</v-list-item>
               <v-list-item @click="handleNavigate('dayOff-requests')">휴가 신청 목록</v-list-item>
-              <v-list-item @click="handleNavigate('dayOff-history')">휴가 히스토리</v-list-item>
+<!--              <v-list-item @click="handleNavigate('dayOff-history')">휴가 히스토리</v-list-item>-->
               <v-list-item @click="handleNavigate('employee-management')">사원 관리</v-list-item>
             </v-list>
           </v-menu>
-          <v-list-item
-              title="테스트" prepend-icon="mdi-rabbit">
-          </v-list-item>
+<!--          <v-list-item-->
+<!--              title="테스트" prepend-icon="mdi-rabbit">-->
+<!--          </v-list-item>-->
 
           <!-- 휴가 카테고리 메뉴 -->
           <v-menu v-if="isLoggedIn" v-model="holidayMenuOpen" offset-y>
@@ -59,9 +59,8 @@
               </v-list-item>
             </template>
             <v-list>
-              <v-list-item @click="handleNavigate('')">팀 구성</v-list-item>
-              <v-list-item @click="handleNavigate('')">휴가 신청 목록</v-list-item>
-<!--              <v-list-item @click="handleNavigate('')">휴가 히스토리</v-list-item>-->
+              <v-list-item @click="handleNavigate('team-leader/dashboard')">팀 구성</v-list-item>
+              <v-list-item @click="handleNavigate('team-leader/dayOff-list')">휴가 신청 목록</v-list-item>
 
             </v-list>
           </v-menu>

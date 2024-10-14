@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="the-title">
-      <h1>휴가 신청 목록</h1>
-      <p>모든 휴가 신청을 조회할 수 있습니다.</p>
+      <h1>팀원 휴가 신청 목록</h1>
+      <p>팀원들의 휴가 신청을 조회하고 처리할 수 있습니다.</p>
     </div>
     <div class="table-container">
       <h2>휴가 신청 현황</h2>
@@ -15,21 +15,20 @@
           <th>시작일</th>
           <th>종료일</th>
           <th>상태</th>
-          <th>조치</th> <!-- 조치 열 추가 -->
+          <th>조치</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="request in dayOffRequests" :key="request.userId">
-<!--          <td>{{ request.id }}</td>-->
-          <td>{{ request.name || '-'}}</td>
-          <td>{{ request.type || '-'}}</td>
-          <td>{{ request.duration || '-'}} 일</td>
-          <td>{{ request.startDate || '-'}}</td>
-          <td>{{ request.endDate || '-'}}</td>
-          <td>{{ request.status || '-'}}</td>
+          <td>{{ request.name || '-' }}</td>
+          <td>{{ request.type || '-' }}</td>
+          <td>{{ request.duration || '-' }} 일</td>
+          <td>{{ request.startDate || '-' }}</td>
+          <td>{{ request.endDate || '-' }}</td>
+          <td>{{ request.status || '-' }}</td>
           <td class="td_actions">
-            <button @click="approveRequest(request)">승인</button> <!-- 승인 버튼 -->
-            <button @click="rejectRequest(request)">반려</button> <!-- 반려 버튼 -->
+            <button @click="approveRequest(request)">승인</button>
+            <button @click="rejectRequest(request)">반려</button>
           </td>
         </tr>
         </tbody>
@@ -44,13 +43,16 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import apiClient from "../../config/axios.js";
 import { useRouter } from 'vue-router';
+import {useUserStore} from "../../store/userStore.js";
 
+const userStore = useUserStore();
 const router = useRouter();
-const companyId = router.currentRoute.value.params.companyId || 1;
+const { companyId, departmentId }= userStore.userData;
 const dayOffRequests = ref([]);
 const totalPages = ref(0);
 const totalElements = ref(0);
@@ -58,23 +60,13 @@ const currentPage = ref(0);
 
 const fetchDayOffRequests = async (page = 0) => {
   try {
-    const response = await apiClient.get(`/dayoff/${companyId}/list`, { params: { page, size: 10 } });
-    if (response.data && response.data.data && response.data.data.content.length > 0) {
-      dayOffRequests.value = response.data.data.content;
-      totalPages.value = response.data.data.totalPages;
-      totalElements.value = response.data.data.totalElements;
-      currentPage.value = page;
-    } else {
-      // 데이터가 없을 경우 빈 배열을 10개 생성
-      dayOffRequests.value = Array.from({ length: 10 }, () => ({}));
-      totalPages.value = 1; // 페이징 처리를 위해 최소 1 페이지는 있음을 보장
-      totalElements.value = 0;
-      currentPage.value = 0;
-    }
+    const response = await apiClient.get(`/teamleader/company/${companyId}/departments/${departmentId}/list`, { params: { page, size: 10 } });
+    dayOffRequests.value = response.data.data.content || Array.from({ length: 10 }, () => ({}));
+    totalPages.value = response.data.data.totalPages;
+    totalElements.value = response.data.data.totalElements;
+    currentPage.value = page;
   } catch (error) {
     console.error('Failed to fetch day off requests:', error);
-    alert('Failed to load data: ' + error.message);
-    // API 호출 실패 시에도 빈 행 표시
     dayOffRequests.value = Array.from({ length: 10 }, () => ({}));
     totalPages.value = 1;
     totalElements.value = 0;
@@ -82,14 +74,12 @@ const fetchDayOffRequests = async (page = 0) => {
   }
 };
 
-
 const paginationRange = computed(() => {
   const start = Math.max(1, currentPage.value + 1 - 5);
   const end = Math.min(start + 9, totalPages.value);
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
-// 휴가 신청 승인/반려 API 호출
 const handleDayOffAction = async (request, reject) => {
   try {
     const response = await apiClient.patch(`/dayoff/${request.companyId}/${request.id}/action`, null, {
@@ -97,7 +87,7 @@ const handleDayOffAction = async (request, reject) => {
     });
     if (response.status === 200) {
       alert(reject ? '휴가 반려 처리되었습니다.' : '휴가 승인 처리되었습니다.');
-      await fetchDayOffRequests(currentPage.value);  // 목록을 다시 불러와 업데이트
+      await fetchDayOffRequests(currentPage.value);
     } else {
       throw new Error(`Failed to process the request: ${response.status}`);
     }
@@ -107,12 +97,10 @@ const handleDayOffAction = async (request, reject) => {
   }
 };
 
-// 승인 버튼
 const approveRequest = (request) => {
   handleDayOffAction(request, false);
 };
 
-// 반려 버튼
 const rejectRequest = (request) => {
   handleDayOffAction(request, true);
 };
@@ -121,7 +109,6 @@ onMounted(() => {
   fetchDayOffRequests();
 });
 </script>
-
 
 <style scoped>
 table {
@@ -140,7 +127,7 @@ table {
 th, td {
   border: 1px solid #cccccc;
   padding: 8px;
-  text-align: center;
+  text-align:center;
   background-color: white;
   color: black;
   border-block-color: black;

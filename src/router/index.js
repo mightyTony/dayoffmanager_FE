@@ -14,6 +14,8 @@ import AdminMemberList from "../components/admin/AdminMemberList.vue";
 import DayOffEnroll from "../components/dayoff/DayOffEnroll.vue";
 import DayOffRequestList from "../components/dayoff/DayOffRequestList.vue";
 import DayOffList from "../components/dayoff/DayOffList.vue";
+import MyTeamMemberList from "../components/teamleader/MyTeamMemberList.vue";
+import MyTeamRequestList from "../components/teamleader/MyTeamRequestList.vue";
 
 
 const routes = [
@@ -85,6 +87,20 @@ const routes = [
         path: '/dayOff-list',
         name: 'DayOffList',
         component: DayOffList,
+        meta: { auth: true },
+        props: true
+    },
+    {
+        path: '/team-leader/dashboard',
+        name: 'TeamLeaderDashboard',
+        component: MyTeamMemberList,
+        meta: { auth: true },
+        props: true
+    },
+    {
+        path: '/team-leader/dayOff-list',
+        name: 'TeamLeaderDayOffList',
+        component: MyTeamRequestList,
         meta: { auth: true },
         props: true
     }

@@ -1,11 +1,10 @@
 <template>
   <div>
     <div class="the-title">
-      <h1>휴가 신청 목록</h1>
-      <p>모든 휴가 신청을 조회할 수 있습니다.</p>
+      <h1>휴가 목록</h1>
     </div>
     <div class="table-container">
-      <h2>휴가 신청 현황</h2>
+      <h2>휴가 목록</h2>
       <table>
         <thead>
         <tr>
