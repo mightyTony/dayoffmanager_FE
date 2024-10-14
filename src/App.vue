@@ -29,6 +29,7 @@
               <v-list-item @click="handleNavigate('dayOff-requests')">휴가 신청 목록</v-list-item>
 <!--              <v-list-item @click="handleNavigate('dayOff-history')">휴가 히스토리</v-list-item>-->
               <v-list-item @click="handleNavigate('employee-management')">사원 관리</v-list-item>
+              <v-list-item @click="handleNavigate('enroll-department')">부서 등록</v-list-item>
             </v-list>
           </v-menu>
 <!--          <v-list-item-->
