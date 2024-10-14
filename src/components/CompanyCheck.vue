@@ -1,6 +1,9 @@
 <template>
   <v-card class="mx-auto my-12 pa-16" elevation="12" max-width="600" rounded="lg">
-    <div class="text-subtitle-1 text-medium-emphasis">사업자 정보 검색</div>
+    <div class="text-subtitle-1 text-medium-emphasis">
+      <a href="https://bizno.net/" target="_blank" rel="noopener noreferrer">사업자등록번호 찾기</a>
+    </div>
+<!--    <div class="text-subtitle-1 text-medium-emphasis">사업자 정보 검색</div>-->
     <br/>
     <v-form ref="form" v-model="valid" class="form-style">
 
