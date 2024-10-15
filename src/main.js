@@ -8,6 +8,7 @@ import vuetify from './plugins/vuetify';
 import DatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import {createPersistedState} from "pinia-plugin-persistedstate";
+// import './assets/styles/global.css'
 
 const pinia = createPinia();
 pinia.use(createPersistedState({

@@ -155,3 +155,18 @@ const handleNavigate = (path) => {
 };
 
 </script>
+
+
+<style>
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('@/assets/font/Pretendard-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Pretendard-Regular', sans-serif;
+}
+</style>
+
