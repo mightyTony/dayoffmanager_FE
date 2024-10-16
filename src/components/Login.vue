@@ -11,9 +11,9 @@
       ></v-text-field>
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
         비밀번호
-        <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">
-          비밀번호를 잊어버리셨나요?
-        </a>
+<!--        <a class="text-caption text-decoration-none text-blue" href="#" rel="noopener noreferrer" target="_blank">-->
+<!--          비밀번호를 잊어버리셨나요?-->
+<!--        </a>-->
       </div>
       <v-text-field
           v-model="password"
@@ -25,11 +25,11 @@
           variant="outlined"
           @click:append-inner="toggleVisibility"
       ></v-text-field>
-      <v-card class="mb-12" color="surface-variant" variant="tonal">
-        <v-card-text class="text-medium-emphasis text-caption">
-          경고: 연속 3회 실패한 경우 계정이 3시간 동안 임시로 잠깁니다. 지금 로그인해야하는 경우 "비밀번호를 잊어버리셨나요?"를 클릭하여 로그인 비밀번호를 재설정할 수도 있습니다.
-        </v-card-text>
-      </v-card>
+<!--      <v-card class="mb-12" color="surface-variant" variant="tonal">-->
+<!--        <v-card-text class="text-medium-emphasis text-caption">-->
+<!--          경고: 연속 3회 실패한 경우 계정이 3시간 동안 임시로 잠깁니다. 지금 로그인해야하는 경우 "비밀번호를 잊어버리셨나요?"를 클릭하여 로그인 비밀번호를 재설정할 수도 있습니다.-->
+<!--        </v-card-text>-->
+<!--      </v-card>-->
       <v-btn class="mb-8" color="blue" size="large" variant="tonal" block @click="handleLogin">
         로그인
       </v-btn>
