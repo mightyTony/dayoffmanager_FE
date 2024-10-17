@@ -42,7 +42,7 @@ const usage = ref([
       '일반 사원',
       '아이디: test123, 비밀번호: password123',
       '팀장',
-      '아이디: leader, 비밀번호: password123'
+      '아이디: leader, 비밀번호: password'
     ]
   },
   {
